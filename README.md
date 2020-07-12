@@ -18,32 +18,6 @@ Create a single node Kubernetes cluster with kubeadm and Ansible.
     ansible-playbook --ask-become-pass --inventory hosts playbook.yml
     ```
 
-1. SSH into the host. Execute the remaining steps on the host.
-1. [Initialize the control-plane node.][1]
-
-    ```bash
-    # Initialize the node.
-    sudo kubeadm init
-    ```
-
-1. Save the output from `kubeadm init` for reference later.
-
-1. Follow the instructions in `kubeadm init` to allow your user to use `kubectl`.
-
-1. [Install a Pod network add-on][2]. For this example, we use Calico.
-
-    ```bash
-    kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
-    ```
-
-1. [Allow the master to schedule pods.][3]
-
-    ```bash
-    kubectl taint nodes --all node-role.kubernetes.io/master-
-    ```
-
-Calico for pod network.
-
 ## Offline
 
 This section includes some special considerations for offline installations.

@@ -83,3 +83,9 @@
       name: kubelet
       state: started
       enabled: yes
+
+  - name: Initialize the Kubernetes master node
+    script:
+      cmd: scripts/init-cluster.sh
+      creates: /usr/local/src/kubeadm-initialized 
+
