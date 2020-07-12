@@ -2,7 +2,8 @@
 
 Create a single node Kubernetes cluster with kubeadm and Ansible. Then, deploy Caddy to demonstrate that we can host a simple static website on the cluster.
 
-1. Confirm that you have SSH access to the host.
+1. Install CentOS 7 on the target host.
+1. Establish SSH access from the Ansible control node to your host.
 1. Use Ansible to provision the host.
 
     ```bash

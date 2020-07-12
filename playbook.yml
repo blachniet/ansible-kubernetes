@@ -1,4 +1,7 @@
 ---
+####################
+# Install Kuberentes
+####################
 - hosts: all
   become: yes
 
@@ -68,7 +71,7 @@
     selinux:
       state: permissive
       policy: targeted
-  
+
   - name: Install kubelet, kubeadm and kubectl
     yum:
       name:
@@ -84,10 +87,16 @@
       state: started
       enabled: yes
 
+####################
+# Initialize cluster
+####################
+- hosts: all
+  become: yes
+  tasks:
   - name: Initialize the Kubernetes master node
     script:
       cmd: scripts/init-cluster.sh
-      creates: /usr/local/src/kubeadm-initialized 
+      creates: /usr/local/src/kubeadm-initialized
 
   - name: Install EPEL yum repository
     yum:
