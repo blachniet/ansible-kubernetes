@@ -89,3 +89,30 @@
       cmd: scripts/init-cluster.sh
       creates: /usr/local/src/kubeadm-initialized 
 
+  - name: Install EPEL yum repository
+    yum:
+      name: epel-release
+      state: present
+
+  # Install Python OpenShift package with Yum
+  # https://github.com/openshift/openshift-restclient-python/issues/280
+  - name: Install python-openshift
+    yum:
+      name: python-openshift
+      state: present
+
+  - name: Copy Kuberenets manifests
+    copy:
+      src: files/usr/local/etc/k8s/
+      dest: /usr/local/etc/k8s/
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: Deploy Caddy on Kubernetes
+    k8s:
+      state: present
+      kubeconfig: /etc/kubernetes/admin.conf
+      src: /usr/local/etc/k8s/caddy.yaml
+
+  # TODO: kubernetes users - copy config to their folder

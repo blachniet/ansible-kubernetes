@@ -1,13 +1,13 @@
 # Ansible Kubernetes
 
-Create a single node Kubernetes cluster with kubeadm and Ansible.
+Create a single node Kubernetes cluster with kubeadm and Ansible. Then, deploy Caddy to demonstrate that we can host a simple static website on the cluster.
 
 1. Confirm that you have SSH access to the host.
 1. Use Ansible to provision the host.
 
     ```bash
     # Save the host connection details.
-    echo "192.168.20.30" >> hosts
+    echo "<ip-addr>" >> hosts
 
     # Create virtual environment with Ansible.
     python3 -m venv .ansible
@@ -17,6 +17,8 @@ Create a single node Kubernetes cluster with kubeadm and Ansible.
     # Run the playbook.
     ansible-playbook --ask-become-pass --inventory hosts playbook.yml
     ```
+
+1. Browse to `http://<ip-addr>:30080/`. You should see the Caddy welcome page.
 
 ## Offline
 
