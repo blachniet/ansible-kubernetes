@@ -35,24 +35,24 @@
     - sysctl system
 
   # Kubernetes v1.18.2 requires conntrack to be installed in root's path
-  - name: ensure conntrack
+  - name: Install conntrack
     yum:
       name: conntrack-tools
-      state: latest
+      state: present
 
   # Docker
-  - name: ensure docker installed
+  - name: Install Docker
     yum:
       name: docker
-      state: latest
-  - name: ensure docker service
+      state: present
+  - name: Start Docker
     service:
       name: docker
       state: started
       enabled: yes
 
   # Kubernetes
-  - name: add kubernetes repo for yum
+  - name: Add Kubernetes yum repo
     yum_repository:
       name: kubernetes
       state: present
