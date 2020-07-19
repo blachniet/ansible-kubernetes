@@ -1,0 +1,5 @@
+---
+- hosts: k8smasters
+  roles:
+  - k8snode
+  - k8smaster

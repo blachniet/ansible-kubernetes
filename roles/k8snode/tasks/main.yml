@@ -1,0 +1,82 @@
+# Disable swap
+- name: disable swap in fstab
+  become: yes
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+swap\s+.*)$'
+    replace: '# \1'
+  notify:
+  - disable swap
+
+# Let iptables see bridged traffic
+- name: modprob
+  become: yes
+  modprobe:
+    name: br_netfilter
+    state: present
+  notify:
+  - sysctl system
+- name: k8s sysctl config
+  become: yes
+  copy:
+    src: files/etc/sysctl.d/k8s.conf
+    dest: /etc/sysctl.d/k8s.conf
+  notify:
+  - sysctl system
+
+# Kubernetes v1.18.2 requires conntrack to be installed in root's path
+- name: Install conntrack
+  become: yes
+  yum:
+    name: conntrack-tools
+    state: present
+
+# Docker
+- name: Install Docker
+  become: yes
+  yum:
+    name: docker
+    state: present
+- name: Start Docker
+  become: yes
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+# Kubernetes
+- name: Add Kubernetes yum repo
+  become: yes
+  yum_repository:
+    name: kubernetes
+    state: present
+    description: Kubernetes
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    enabled: yes
+    gpgcheck: yes
+    repo_gpgcheck: yes
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    exclude: kubelet kubeadm kubectl
+
+- name: Put SELinux in permissive mode, logging actions that would be blocked.
+  become: yes
+  selinux:
+    state: permissive
+    policy: targeted
+
+- name: Install kubelet, kubeadm and kubectl
+  become: yes
+  yum:
+    name:
+    - kubelet
+    - kubeadm
+    - kubectl
+    state: present
+    disable_excludes: kubernetes
+
+- name: Start kubelet service
+  become: yes
+  service:
+    name: kubelet
+    state: started
+    enabled: yes

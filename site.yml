@@ -1,0 +1,3 @@
+---
+- import_playbook: k8smasters.yml
+- import_playbook: k8sworkers.yml

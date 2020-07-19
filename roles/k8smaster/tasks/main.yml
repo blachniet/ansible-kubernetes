@@ -1,0 +1,37 @@
+- name: Initialize the Kubernetes master node
+  become: yes
+  script:
+    cmd: scripts/init-cluster.sh
+    creates: /usr/local/src/kubeadm-initialized
+
+- name: Install EPEL yum repository
+  become: yes
+  yum:
+    name: epel-release
+    state: present
+
+# Install Python OpenShift package with Yum
+# https://github.com/openshift/openshift-restclient-python/issues/280
+- name: Install python-openshift
+  become: yes
+  yum:
+    name: python-openshift
+    state: present
+
+- name: Copy Kuberenets manifests
+  become: yes
+  copy:
+    src: files/usr/local/etc/k8s/
+    dest: /usr/local/etc/k8s/
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Deploy Caddy on Kubernetes
+  become: yes
+  k8s:
+    state: present
+    kubeconfig: /etc/kubernetes/admin.conf
+    src: /usr/local/etc/k8s/caddy.yaml
+
+# TODO: kubernetes users - copy config to their folder

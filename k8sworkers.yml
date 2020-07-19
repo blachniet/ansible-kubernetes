@@ -1,0 +1,5 @@
+---
+- hosts: k8sworkers
+  roles:
+  - k8snode
+  # - k8swoker
