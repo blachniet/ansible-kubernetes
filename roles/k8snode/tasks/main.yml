@@ -7,9 +7,10 @@
     replace: '# \1'
 - name: disable swap (immediate)
   become: yes
-  creates: /var/lib/ansible-kubernetes/disable_swap
   shell: |
-    swapoff -a && touch /var/lib/ansible-kubernetes/disable_swap
+    swapoff -a && touch /usr/local/src/disable_swap
+  args:
+    creates: /usr/local/src/disable_swap
 
 # Let iptables see bridged traffic
 - name: modprob
@@ -24,13 +25,15 @@
     dest: /etc/sysctl.d/k8s.conf
 - name: sysctl system
   become: yes
-  creates: /var/lib/ansible-kubernetes/sysctl_system
   shell: |
-    sysctl --system && touch /var/lib/ansible-kubernetes/sysctl_system
+    sysctl --system && touch /usr/local/src/sysctl_system
+  args:
+    creates: /usr/local/src/sysctl_system
 
 - name: Open port for Kubelet API
   become: yes
   firewalld:
+    # TODO: Can I add "source" for the firewall? Rich rules?
     state: enabled
     port: 10250/tcp
     immediate: yes

@@ -1,6 +1,7 @@
 - name: Open port for Kubernetes API
   become: yes
   firewalld:
+    # TODO: Can I add "source" for the firewall? Rich rules?
     state: enabled
     port: 6443/tcp
     immediate: yes
@@ -11,6 +12,10 @@
   script:
     cmd: scripts/init-cluster.sh
     creates: /usr/local/src/kubeadm-initialized
+  register: k8s_init_output
+
+- name: Print Kubernetes cluster initialization output
+  debug: var=k8s_init_output.stdout_lines
 
 - name: Install EPEL yum repository
   become: yes
