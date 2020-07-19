@@ -1,8 +1,0 @@
-- name: disable swap
-  become: yes
-  shell: |
-    swapoff -a
-- name: sysctl system
-  become: yes
-  shell: |
-    sysctl --system

@@ -1,12 +1,15 @@
 # Disable swap
-- name: disable swap in fstab
+- name: disable swap in fstab (permanent)
   become: yes
   replace:
     path: /etc/fstab
     regexp: '^([^#].*?\sswap\s+swap\s+.*)$'
     replace: '# \1'
-  notify:
-  - disable swap
+- name: disable swap (immediate)
+  become: yes
+  creates: /var/lib/ansible-kubernetes/disable_swap
+  shell: |
+    swapoff -a && touch /var/lib/ansible-kubernetes/disable_swap
 
 # Let iptables see bridged traffic
 - name: modprob
@@ -14,15 +17,24 @@
   modprobe:
     name: br_netfilter
     state: present
-  notify:
-  - sysctl system
 - name: k8s sysctl config
   become: yes
   copy:
     src: files/etc/sysctl.d/k8s.conf
     dest: /etc/sysctl.d/k8s.conf
-  notify:
-  - sysctl system
+- name: sysctl system
+  become: yes
+  creates: /var/lib/ansible-kubernetes/sysctl_system
+  shell: |
+    sysctl --system && touch /var/lib/ansible-kubernetes/sysctl_system
+
+- name: Open port for Kubelet API
+  become: yes
+  firewalld:
+    state: enabled
+    port: 10250/tcp
+    immediate: yes
+    permanent: yes
 
 # Kubernetes v1.18.2 requires conntrack to be installed in root's path
 - name: Install conntrack

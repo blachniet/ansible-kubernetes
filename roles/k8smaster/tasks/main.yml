@@ -1,3 +1,11 @@
+- name: Open port for Kubernetes API
+  become: yes
+  firewalld:
+    state: enabled
+    port: 6443/tcp
+    immediate: yes
+    permanent: yes
+
 - name: Initialize the Kubernetes master node
   become: yes
   script:
